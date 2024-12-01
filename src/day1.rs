@@ -1,0 +1,67 @@
+use std::collections::BTreeMap;
+use std::collections::btree_map::Entry;
+use aoc_runner_derive::aoc;
+use nom::character::complete::{digit1, multispace0};
+use nom::combinator::{map, map_res};
+use nom::IResult;
+use nom::Parser;
+
+fn parse_line(input: &str) -> IResult<&str, (u32, u32)> {
+    let (input, num1) = map_res(digit1, |s: &str| s.parse::<u32>()).parse(input)?;
+    let (input, _) = multispace0(input)?;
+    let (input, num2) = map_res(digit1, |s: &str| s.parse::<u32>()).parse(input)?;
+
+    Ok((input, (num1, num2)))
+}
+
+#[aoc(day1, part1)]
+pub fn part1(input: &str) -> u32 {
+    let mut list1: Vec<u32> = Vec::with_capacity(1000);
+    let mut list2: Vec<u32> = Vec::with_capacity(1000);
+
+    let mut total_distance = 0;
+    let lines = input.lines();
+
+    for line in lines {
+        let (_, (num1, num2)) = parse_line(line).unwrap();
+        list1.push(num1);
+        list2.push(num2);
+    }
+
+    list1.sort();
+    list2.sort();
+
+    for (num1, num2) in list1.into_iter().zip(list2.into_iter()) {
+        total_distance += num1.abs_diff(num2);
+    }
+
+    total_distance
+}
+
+#[aoc(day1, part2)]
+pub fn part2(input: &str) -> u32 {
+    let mut list1: Vec<u32> = Vec::with_capacity(1000);
+    let mut list2 = BTreeMap::new();
+    let mut total_similarity = 0;
+
+    let lines = input.lines();
+
+    for line in lines {
+        let (_, (num1, num2)) = parse_line(line).unwrap();
+        list1.push(num1);
+        match list2.entry(num2) {
+            Entry::Occupied(mut e) => {
+                *e.get_mut() += 1;
+            }
+            Entry::Vacant(e) => {
+                e.insert(1);
+            }
+        }
+    }
+
+    for id in list1 {
+        total_similarity += id * list2.get(&id).unwrap_or(&0);
+    }
+
+    total_similarity
+}
