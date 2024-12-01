@@ -1,16 +1,13 @@
 use std::collections::hash_map::Entry;
 use aoc_runner_derive::aoc;
-use nom::character::complete::{digit1, multispace0};
-use nom::combinator::{map, map_res};
-use nom::IResult;
-use nom::Parser;
 
-fn parse_line(input: &str) -> IResult<&str, (u32, u32)> {
-    let (input, num1) = map_res(digit1, |s: &str| s.parse::<u32>()).parse(input)?;
-    let (input, _) = multispace0(input)?;
-    let (input, num2) = map_res(digit1, |s: &str| s.parse::<u32>()).parse(input)?;
+#[inline(always)]
+fn parse_line(input: &str) -> (u32, u32) {
+    let mut split = input.split("   ");
+    let num1 = split.next().and_then(|f| f.parse().ok()).unwrap();
+    let num2 = split.next().and_then(|f| f.parse().ok()).unwrap();
 
-    Ok((input, (num1, num2)))
+    (num1, num2)
 }
 
 #[aoc(day1, part1)]
@@ -22,7 +19,7 @@ pub fn part1(input: &str) -> u32 {
     let lines = input.lines();
 
     for line in lines {
-        let (_, (num1, num2)) = parse_line(line).unwrap();
+        let (num1, num2) = parse_line(line);
         list1.push(num1);
         list2.push(num2);
     }
@@ -47,7 +44,7 @@ pub fn part2(input: &str) -> u32 {
     let lines = input.lines();
 
     for line in lines {
-        let (_, (num1, num2)) = parse_line(line).unwrap();
+        let (num1, num2) = parse_line(line);
         list1.push(num1);
         match list2.entry(num2) {
             Entry::Occupied(mut e) => {
