@@ -1,5 +1,4 @@
-use std::collections::BTreeMap;
-use std::collections::btree_map::Entry;
+use std::collections::hash_map::Entry;
 use aoc_runner_derive::aoc;
 use nom::character::complete::{digit1, multispace0};
 use nom::combinator::{map, map_res};
@@ -35,13 +34,14 @@ pub fn part1(input: &str) -> u32 {
         total_distance += num1.abs_diff(num2);
     }
 
+    
     total_distance
 }
 
 #[aoc(day1, part2)]
 pub fn part2(input: &str) -> u32 {
     let mut list1: Vec<u32> = Vec::with_capacity(1000);
-    let mut list2 = BTreeMap::new();
+    let mut list2 = rustc_hash::FxHashMap::default();
     let mut total_similarity = 0;
 
     let lines = input.lines();
