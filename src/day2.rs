@@ -1,5 +1,5 @@
 use aoc_runner_derive::aoc;
-use smallvec::SmallVec;
+use arrayvec::ArrayVec;
 
 #[inline(always)]
 pub fn diff_in_range(diff: i32) -> bool {
@@ -90,7 +90,7 @@ pub fn part2(input: &str) -> u32 {
     'report: for line in lines {
         let levels = line.split(" ").map(|s| s.parse::<i32>().unwrap());
      
-        let mut vec = levels.collect::<SmallVec<[i32; 12]>>();
+        let mut vec = levels.collect::<ArrayVec<i32, 12>>();
         if let Some(index) = subset_is_good_until(&vec) {
 
             // check edges 
