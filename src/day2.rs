@@ -19,7 +19,7 @@ pub fn part1(input: &str) -> u32 {
 
     'report: for line in lines {
         let mut levels = line.split(" ").map(|s| s.parse::<i32>().unwrap());
-     
+
         let p1 = levels.next().unwrap();
         let p2 = levels.next().unwrap();
 
@@ -29,7 +29,6 @@ pub fn part1(input: &str) -> u32 {
             continue 'report;
         }
 
-
         let mut current = p2;
 
         for level in levels {
@@ -38,7 +37,7 @@ pub fn part1(input: &str) -> u32 {
                 // unsafe
                 continue 'report;
             }
-           
+
             current_diff = new_diff;
             current = level;
         }
@@ -52,7 +51,7 @@ pub fn part1(input: &str) -> u32 {
 #[inline(always)]
 fn subset_is_good_until(subset: &[i32]) -> Option<usize> {
     if subset.len() <= 1 {
-        return None
+        return None;
     }
 
     let p1 = subset[0];
@@ -68,17 +67,15 @@ fn subset_is_good_until(subset: &[i32]) -> Option<usize> {
     for (index, level) in subset[2..].iter().enumerate() {
         let new_diff = current - level;
         if !diff_in_range(new_diff) || !diff_same_monotonicity(current_diff, new_diff) {
-            return Some(index + 2)
+            return Some(index + 2);
         }
-       
+
         current_diff = new_diff;
         current = *level;
     }
 
     None
-
 }
-
 
 #[aoc(day2, part2)]
 pub fn part2(input: &str) -> u32 {
@@ -89,11 +86,10 @@ pub fn part2(input: &str) -> u32 {
 
     'report: for line in lines {
         let levels = line.split(" ").map(|s| s.parse::<i32>().unwrap());
-     
+
         let mut vec = levels.collect::<ArrayVec<i32, 12>>();
         if let Some(index) = subset_is_good_until(&vec) {
-
-            // check edges 
+            // check edges
             if subset_is_good_until(&vec[1..]).is_none() {
                 safe_count += 1;
                 continue 'report;
@@ -127,14 +123,10 @@ pub fn part2(input: &str) -> u32 {
             }
             continue 'report;
         }
-       
 
         // println!("{} is safe", line);
         safe_count += 1;
     }
-
-
-
 
     safe_count
 }
@@ -184,7 +176,6 @@ mod test {
 
         assert_eq!(part2(input), 10);
     }
-
 
     #[test]
     fn part1_test_bad() {
