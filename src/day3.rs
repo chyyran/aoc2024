@@ -1,7 +1,7 @@
 use aoc_runner_derive::aoc;
 use nom::{
     branch::alt, bytes::complete::tag, character::complete::anychar, combinator::map,
-    multi::many_till, IResult, Parser,
+    multi::many_till, sequence::separated_pair, IResult, Parser,
 };
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -22,9 +22,12 @@ impl Instr {
 
 fn parse_mul(input: &str) -> IResult<&str, Instr> {
     let (input, _) = tag("mul(")(input)?;
-    let (input, a) = nom::character::complete::i32(input)?;
-    let (input, _) = tag(",")(input)?;
-    let (input, b) = nom::character::complete::i32(input)?;
+    let (input, (a, b)) = separated_pair(
+        nom::character::complete::i32,
+        tag(","),
+        nom::character::complete::i32,
+    )
+    .parse(input)?;
     let (input, _) = tag(")")(input)?;
 
     Ok((input, Instr::Mul(a, b)))
