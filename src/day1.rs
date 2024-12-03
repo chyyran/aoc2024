@@ -1,5 +1,5 @@
-use std::collections::hash_map::Entry;
 use aoc_runner_derive::aoc;
+use std::collections::hash_map::Entry;
 
 #[inline(always)]
 fn parse_line(input: &str) -> (u32, u32) {
@@ -24,14 +24,13 @@ pub fn part1(input: &str) -> u32 {
         list2.push(num2);
     }
 
-    list1.sort();
-    list2.sort();
+    list1.sort_unstable();
+    list2.sort_unstable();
 
     for (num1, num2) in list1.into_iter().zip(list2.into_iter()) {
         total_distance += num1.abs_diff(num2);
     }
 
-    
     total_distance
 }
 
