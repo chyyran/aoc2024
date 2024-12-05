@@ -3,7 +3,7 @@ use std::{
     fmt::{Display, Write},
 };
 
-use aoc_runner_derive::aoc;
+use aoc_runner_derive::{aoc, aoc_generator};
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -28,6 +28,7 @@ enum Direction {
 }
 
 impl Direction {
+    #[inline(always)]
     fn transform(self, coords: (usize, usize), bounds: usize) -> Option<(usize, usize)> {
         let (row, col) = coords;
         let transformed = match self {
@@ -99,6 +100,11 @@ struct Cell {
     pub letter: Letter,
 }
 
+#[aoc_generator(day4)]
+pub fn input_generator(input: &str) -> Grid {
+    Grid::parse(input)
+}
+
 impl Grid {
     pub fn len(&self) -> usize {
         self.letters.len()
@@ -119,6 +125,7 @@ impl Grid {
         Grid { letters, size }
     }
 
+    #[inline(always)]
     pub fn at_index_mut(&mut self, index: usize) -> Option<&mut Cell> {
         self.letters.get_mut(index)
     }
@@ -142,6 +149,7 @@ impl Grid {
         index
     }
 
+    #[inline(always)]
     pub fn at_direction(
         &self,
         index: usize,
@@ -155,9 +163,7 @@ impl Grid {
 }
 
 #[aoc(day4, part1)]
-pub fn part1(input: &str) -> u32 {
-    let mut grid = Grid::parse(input);
-
+pub fn part1(grid: &Grid) -> u32 {
     const ALL_DIRECTIONS: &[Direction] = &[
         Direction::North,
         Direction::South,
@@ -169,82 +175,59 @@ pub fn part1(input: &str) -> u32 {
         Direction::SouthWest,
     ];
 
-    let mut valid_xs: Vec<(usize, Direction)> = Vec::new();
+    let mut valid_xs = 0;
 
     for x_index in 0..grid.len() {
-        let Some(cell) = grid.at_index_mut(x_index) else {
+        let Some(cell) = grid.at_index(x_index) else {
             continue;
         };
 
         if cell.letter != Letter::X {
             continue;
         }
+
         let ms = ALL_DIRECTIONS
             .iter()
             .map(|d| grid.at_direction(x_index, *d))
             .filter_map(|s| s)
-            .filter_map(|(s, _, direction)| {
+            .filter_map(|(s, m_index, direction)| {
                 if s.letter == Letter::M {
-                    Some((x_index, direction))
+                    Some((m_index, direction))
                 } else {
                     None
                 }
             });
-        valid_xs.extend(ms);
+
+        for (m_index, direction) in ms {
+            let Some((cell, a_index, _)) = grid.at_direction(m_index, direction) else {
+                continue;
+            };
+
+            if cell.letter != Letter::A {
+                continue;
+            }
+
+            let Some((cell, _s_index, _)) = grid.at_direction(a_index, direction) else {
+                continue;
+            };
+
+            if cell.letter != Letter::S {
+                continue;
+            }
+
+            valid_xs += 1;
+        }
     }
 
-    // let mut valid = HashSet::new();
-
-    valid_xs.retain(|&(x_index, direction)| {
-        let Some((cell, m_index, _)) = grid.at_direction(x_index, direction) else {
-            return false;
-        };
-
-        if cell.letter != Letter::M {
-            return false;
-        }
-
-        let Some((cell, a_index, _)) = grid.at_direction(m_index, direction) else {
-            return false;
-        };
-
-        if cell.letter != Letter::A {
-            return false;
-        }
-
-        let Some((cell, _s_index, _)) = grid.at_direction(a_index, direction) else {
-            return false;
-        };
-
-        if cell.letter != Letter::S {
-            return false;
-        }
-
-        // valid.insert(x_index);
-        // valid.insert(m_index);
-        // valid.insert(a_index);
-        // valid.insert(s_index);
-        true
-    });
-
-    valid_xs.len() as u32
+    valid_xs
 }
 
 #[aoc(day4, part2)]
-pub fn part2(input: &str) -> u32 {
-    let mut grid = Grid::parse(input);
-
-    const CORNER_DIRECTIONS: &[Direction] = &[
-        Direction::NorthEast,
-        Direction::NorthWest,
-        Direction::SouthEast,
-        Direction::SouthWest,
-    ];
-
+pub fn part2(grid: &Grid) -> u32 {
     let mut valid_as = 0;
 
     for a_index in 0..grid.len() {
-        let Some(cell) = grid.at_index_mut(a_index) else {
+        let Some(cell) = grid.at_index(a_index) else {
             continue;
         };
 
