@@ -360,7 +360,7 @@ MAMMMXMMMM
 MXMXAXMASX
 "#;
 
-        assert_eq!(part1(INPUT), 18);
+        assert_eq!(part1(&Grid::parse(INPUT)), 18);
     }
 
     #[test]
@@ -377,7 +377,7 @@ MAMMMXMMMM
 MXMXAXMASX
 "#;
 
-        assert_eq!(part2(INPUT), 9);
+        assert_eq!(part2(&Grid::parse(INPUT)), 9);
     }
 
     #[test]
@@ -396,7 +396,7 @@ AAAMAASXMMMS
 MMMMMXMAAXAS
 "#;
 
-        assert_eq!(part1(INPUT), 8);
+        assert_eq!(part1(&Grid::parse(INPUT)), 8);
     }
 }
 
