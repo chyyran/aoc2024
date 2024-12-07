@@ -1,4 +1,5 @@
 use aoc_runner_derive::aoc;
+use arrayvec::ArrayVec;
 #[aoc(day7, part1)]
 pub fn part1(input: &str) -> u64 {
     input
@@ -79,7 +80,8 @@ fn has_valid_permutation_concat(test: u64, operands: &[u64]) -> bool {
         return test == operands[0];
     }
 
-    let mut queue = Vec::from([(operands[0], 1)]);
+    let mut queue = ArrayVec::<_, 64>::new();
+    queue.push((operands[0], 1));
 
     while let Some((operand, neighbour)) = queue.pop() {
         let sum = operand + operands[neighbour];
@@ -91,7 +93,7 @@ fn has_valid_permutation_concat(test: u64, operands: &[u64]) -> bool {
             // no more, so this is a leaf node.
             if sum == test || product == test || concat == test {
                 return true;
-            }
+            }            
         } else {
             // not done
             if sum <= test {
