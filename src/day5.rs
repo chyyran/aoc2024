@@ -1,4 +1,7 @@
-use std::{cmp::Ordering, collections::{hash_map::Entry, HashMap, HashSet}};
+use std::{
+    cmp::Ordering,
+    collections::{hash_map::Entry, HashMap, HashSet},
+};
 
 use aoc_runner_derive::aoc;
 #[aoc(day5, part1)]
@@ -103,12 +106,11 @@ impl PageOrdering {
             return Ordering::Equal;
         }
 
-        
         if let Some(order) = orderings_b {
             // Everything in the b set has to be to the left of a, so
             // if it contains a then its not ordered.
             if order.contains(a) {
-                return Ordering::Greater
+                return Ordering::Greater;
             }
         }
 
