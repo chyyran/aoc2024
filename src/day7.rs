@@ -61,12 +61,14 @@ fn has_valid_permutation(test: u64, operands: &[u64]) -> bool {
             // not done
             queue.push((sum, next));
             queue.push((product, next));
+       
         }
     }
 
     false
 }
 
+#[inline(always)]
 fn concat(a: u64, b: u64) -> u64 {
     let digits_in_b = b.checked_ilog10().unwrap_or_default() + 1;
     (a * (10u64.pow(digits_in_b))) + b
@@ -92,9 +94,17 @@ fn has_valid_permutation_concat(test: u64, operands: &[u64]) -> bool {
             }
         } else {
             // not done
-            queue.push((sum, next));
-            queue.push((product, next));
-            queue.push((concat, next));
+            if sum <= test {
+                queue.push((sum, next));
+            }
+
+            if product <= test {
+                queue.push((product, next));
+            }
+
+            if concat <= test {
+                queue.push((concat, next));
+            }
         }
     }
 
