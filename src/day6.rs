@@ -1,7 +1,9 @@
-use std::{collections::{HashMap, HashSet}, fmt::Write};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Write,
+};
 
 use aoc_runner_derive::{aoc, aoc_generator};
-
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 enum Direction {
@@ -17,7 +19,12 @@ enum Direction {
 
 impl Direction {
     #[inline(always)]
-    fn step_one(self, coords: (usize, usize), width: usize, height: usize) -> Option<(usize, usize)> {
+    fn step_one(
+        self,
+        coords: (usize, usize),
+        width: usize,
+        height: usize,
+    ) -> Option<(usize, usize)> {
         let (row, col) = coords;
         let transformed = match self {
             Direction::North => row.checked_sub(1).map(|row| (row, col)),
@@ -50,7 +57,7 @@ pub struct Grid {
     guard_position: usize,
     guard_orientation: Direction,
     width: usize,
-    height: usize
+    height: usize,
 }
 
 pub struct VisitedGrid(Grid);
@@ -82,8 +89,7 @@ impl Grid {
 
             height += 1;
         }
-    
-        
+
         let visited = HashMap::from([(guard.unwrap(), HashSet::from([Direction::North]))]);
 
         Grid {
@@ -97,7 +103,6 @@ impl Grid {
         }
     }
 
-    
     #[inline(always)]
     pub fn index_to_coordinate(&self, index: usize) -> (usize, usize) {
         let column = index % self.width;
@@ -111,8 +116,7 @@ impl Grid {
         let index = row * self.width + column;
         index
     }
-    
-    
+
     #[inline(always)]
     pub fn coordinate_to_index_width(width: usize, coords: (usize, usize)) -> usize {
         let (row, column) = coords;
@@ -121,7 +125,11 @@ impl Grid {
     }
 
     pub fn drive_guard(mut self) -> VisitedGrid {
-        let next_move = self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height);
+        let next_move = self.guard_orientation.step_one(
+            self.index_to_coordinate(self.guard_position),
+            self.width,
+            self.height,
+        );
         let mut queue = vec![next_move];
 
         let mut stop_rot = 0;
@@ -135,7 +143,11 @@ impl Grid {
             if self.obstacles.contains(&next_index) {
                 // rotate 90 deg
                 self.guard_orientation = self.guard_orientation.turn_90_right();
-                let next_move = self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height);
+                let next_move = self.guard_orientation.step_one(
+                    self.index_to_coordinate(self.guard_position),
+                    self.width,
+                    self.height,
+                );
                 queue.push(next_move);
                 stop_rot += 1;
                 continue;
@@ -145,15 +157,21 @@ impl Grid {
             match self.visited.entry(next_index) {
                 std::collections::hash_map::Entry::Occupied(mut occupied_entry) => {
                     occupied_entry.get_mut().insert(self.guard_orientation);
-                },
+                }
                 std::collections::hash_map::Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(HashSet::new()).insert(self.guard_orientation);
-                },
+                    vacant_entry
+                        .insert(HashSet::new())
+                        .insert(self.guard_orientation);
+                }
             }
 
             // move the guard without changing orientation
             self.guard_position = next_index;
-            queue.push(self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height));
+            queue.push(self.guard_orientation.step_one(
+                self.index_to_coordinate(self.guard_position),
+                self.width,
+                self.height,
+            ));
             stop_rot = 0;
         }
 
@@ -161,7 +179,11 @@ impl Grid {
     }
 
     fn will_loop(mut self) -> bool {
-        let next_move = self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height);
+        let next_move = self.guard_orientation.step_one(
+            self.index_to_coordinate(self.guard_position),
+            self.width,
+            self.height,
+        );
         let mut queue = vec![next_move];
 
         let mut stop_rot = 0;
@@ -169,7 +191,11 @@ impl Grid {
             let next_index = self.coordinate_to_index(next_move);
 
             // We looped back so it works.
-            if self.visited.get(&next_index).is_some_and(|visited| visited.contains(&self.guard_orientation)) {
+            if self
+                .visited
+                .get(&next_index)
+                .is_some_and(|visited| visited.contains(&self.guard_orientation))
+            {
                 return true;
             }
 
@@ -181,7 +207,11 @@ impl Grid {
             if self.obstacles.contains(&next_index) {
                 // rotate 90 deg
                 self.guard_orientation = self.guard_orientation.turn_90_right();
-                let next_move = self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height);
+                let next_move = self.guard_orientation.step_one(
+                    self.index_to_coordinate(self.guard_position),
+                    self.width,
+                    self.height,
+                );
                 queue.push(next_move);
                 stop_rot += 1;
                 continue;
@@ -191,13 +221,19 @@ impl Grid {
             match self.visited.entry(next_index) {
                 std::collections::hash_map::Entry::Occupied(mut occupied_entry) => {
                     occupied_entry.get_mut().insert(self.guard_orientation);
-                },
+                }
                 std::collections::hash_map::Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(HashSet::new()).insert(self.guard_orientation);
-                },
-            }            // move the guard without changing orientation
+                    vacant_entry
+                        .insert(HashSet::new())
+                        .insert(self.guard_orientation);
+                }
+            } // move the guard without changing orientation
             self.guard_position = next_index;
-            queue.push(self.guard_orientation.step_one(self.index_to_coordinate(self.guard_position), self.width, self.height));
+            queue.push(self.guard_orientation.step_one(
+                self.index_to_coordinate(self.guard_position),
+                self.width,
+                self.height,
+            ));
             stop_rot = 0;
         }
 
@@ -220,9 +256,7 @@ impl Grid {
         }
         count
     }
-
 }
-
 
 impl std::fmt::Display for Grid {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -254,7 +288,7 @@ impl std::fmt::Display for VisitedGrid {
         for row in 0..self.0.height {
             for col in 0..self.0.width {
                 let index = self.0.coordinate_to_index((row, col));
-                if self.0.visited.contains_key(&index){
+                if self.0.visited.contains_key(&index) {
                     f.write_char('X')?;
                 } else if self.0.obstacles.contains(&index) {
                     f.write_char('#')?;
@@ -284,7 +318,6 @@ pub fn part2(input: &str) -> u32 {
 mod test {
     use crate::day6::Grid;
 
-
     const TEST_INPUT: &str = r#"....#.....
 .........#
 ..........
@@ -304,7 +337,6 @@ mod test {
 
     #[test]
     pub fn test_part1() {
-
         const EXPECTED: &str = r#"....#.....
 ....XXXXX#
 ....X...X.
@@ -318,14 +350,11 @@ mod test {
         let grid: crate::day6::VisitedGrid = Grid::parse(TEST_INPUT).drive_guard();
         assert_eq!(grid.to_string().trim(), EXPECTED);
         assert_eq!(grid.len(), 41)
-
     }
 
     #[test]
     pub fn test_part2() {
-
         let grid = Grid::parse(TEST_INPUT);
         assert_eq!(grid.find_obstructions(), 6)
-
     }
 }

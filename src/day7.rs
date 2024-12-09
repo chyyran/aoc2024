@@ -62,7 +62,6 @@ fn has_valid_permutation(test: u64, operands: &[u64]) -> bool {
             // not done
             queue.push((sum, next));
             queue.push((product, next));
-       
         }
     }
 
@@ -80,7 +79,7 @@ fn has_valid_permutation_concat(test: u64, operands: &[u64]) -> bool {
         return test == operands[0];
     }
 
-    let mut queue = ArrayVec::<_, 64>::new();
+    let mut queue = ArrayVec::<_, 128>::new();
     queue.push((operands[0], 1));
 
     while let Some((operand, neighbour)) = queue.pop() {
@@ -93,7 +92,7 @@ fn has_valid_permutation_concat(test: u64, operands: &[u64]) -> bool {
             // no more, so this is a leaf node.
             if sum == test || product == test || concat == test {
                 return true;
-            }            
+            }
         } else {
             // not done
             if sum <= test {
@@ -153,6 +152,6 @@ mod test {
 21037: 9 7 18 13
 292: 11 6 16 20"#;
 
-        assert_eq!(part2(input), 3749);
+        assert_eq!(part2(input), 11387);
     }
 }
